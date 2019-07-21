@@ -61,7 +61,7 @@ for single_date in daterange(start_date, end_date):
 
 insert.executemany(i_date, args)
 db.commit()
-print("d_date SAVED")
+print("d_date LOADED")
 
 i_time = """
             INSERT INTO `d_time`
@@ -87,4 +87,4 @@ for hour in range(0, 13):
 
 insert.executemany(i_time, args)
 db.commit()
-print("d_time SAVED")
+print("d_time LOADED")
