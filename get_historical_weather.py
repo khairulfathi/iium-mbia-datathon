@@ -18,7 +18,7 @@ spostal = """
             SELECT DISTINCT postal_code
             FROM station
             WHERE postal_code NOT IN (SELECT DISTINCT postal_code FROM weather)
-            LIMIT 3
+            LIMIT 5
             """
 iweather = """
             INSERT INTO `weather`
