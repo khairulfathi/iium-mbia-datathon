@@ -29,7 +29,11 @@ except mysql.connector.Error as err:
     print("d_weather FAILED TO LOAD: {}".format(err))
 
 try:
-    i_dimensions.execute("TRUNCATE TABLE d_station")
+    i_dimensions.execute("TRUNCATE TABLE d_event")
+    i_dimensions.execute("DELETE FROM d_event_venue")
+    i_dimensions.execute("DELETE FROM d_station")
+    i_dimensions.execute("ALTER TABLE d_event_venue AUTO_INCREMENT = 1")
+    i_dimensions.execute("ALTER TABLE d_station AUTO_INCREMENT = 1")
 
     i_dimensions.execute(
         """
@@ -95,8 +99,6 @@ except mysql.connector.Error as err:
     print("d_train FAILED TO LOAD: {}".format(err))
 
 try:
-    i_dimensions.execute("TRUNCATE TABLE d_event_venue")
-
     i_dimensions.execute(
         """
         INSERT INTO d_event_venue(station_id, label, latitude, longitude)
@@ -112,6 +114,26 @@ try:
     print("d_event_venue LOADED")
 except mysql.connector.Error as err:
     print("d_event_venue FAILED TO LOAD: {}".format(err))
+
+try:
+    i_dimensions.execute(
+        """
+        INSERT INTO d_event (`event_venue_id`, `station_id`, `label`, `source`,
+        `start_time`, `end_time`)
+        SELECT DISTINCT d_event_venue.id, d_event_venue.station_id,
+        eventbrite.name, 'eventbrite', start_local, end_local
+        FROM eventbrite
+        LEFT JOIN d_event_venue
+        ON CAST(eventbrite.venue_latitude AS DECIMAL(11, 8)) =
+        d_event_venue.latitude
+        AND CAST(eventbrite.venue_longitude AS DECIMAL(11, 8)) =
+        d_event_venue.longitude
+        """
+    )
+
+    print("d_event LOADED")
+except mysql.connector.Error as err:
+    print("d_event FAILED TO LOAD: {}".format(err))
 
 db.commit()
 s_dimensions.close()
