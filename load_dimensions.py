@@ -94,6 +94,25 @@ try:
 except:
     print("d_train FAILED TO LOAD")
 
+try:
+    i_dimensions.execute("TRUNCATE TABLE d_event_venue")
+
+    i_dimensions.execute(
+        """
+        INSERT INTO d_event_venue(station_id, label, latitude, longitude)
+        SELECT DISTINCT d_station.id, venue_name,
+        CAST(venue_latitude AS DECIMAL(11,8)),
+        CAST(venue_longitude AS DECIMAL(11,8))
+        FROM eventbrite
+        LEFT JOIN d_station
+        ON eventbrite.from_id = d_station.code
+        """
+    )
+
+    print("d_event_venue LOADED")
+except:
+    print("d_event_venue FAILED TO LOAD")
+
 db.commit()
 s_dimensions.close()
 i_dimensions.close()
