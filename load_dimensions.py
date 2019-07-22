@@ -25,8 +25,8 @@ try:
     )
 
     print("d_weather LOADED")
-except:
-    print("d_weather FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_weather FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_station")
@@ -43,8 +43,8 @@ try:
     )
 
     print("d_station LOADED")
-except:
-    print("d_station FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_station FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_line")
@@ -59,8 +59,8 @@ try:
     )
 
     print("d_line LOADED")
-except:
-    print("d_line FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_line FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_status")
@@ -75,8 +75,8 @@ try:
     )
 
     print("d_status LOADED")
-except:
-    print("d_status FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_status FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_train")
@@ -91,8 +91,8 @@ try:
     )
 
     print("d_train LOADED")
-except:
-    print("d_train FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_train FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_event_venue")
@@ -110,8 +110,8 @@ try:
     )
 
     print("d_event_venue LOADED")
-except:
-    print("d_event_venue FAILED TO LOAD")
+except mysql.connector.Error as err:
+    print("d_event_venue FAILED TO LOAD: {}".format(err))
 
 db.commit()
 s_dimensions.close()
