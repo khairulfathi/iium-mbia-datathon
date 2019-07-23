@@ -11,30 +11,26 @@ ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
 db = mysql.connector.connect(**dbconfig)
-stations = db.cursor(buffered=True)
-insert = db.cursor()
+s_stations = db.cursor(buffered=True)
+i_stations = db.cursor()
 
-sstation = """
-            SELECT DISTINCT `from`, `from_id`
-            FROM train_trip_2
-            WHERE type = 'NJ Transit'
-            AND line = 'Main Line'
-            """
-istation = """
-            INSERT INTO `station`
-            (
-                `from`, `from_id`, `lat`, `lng`, `formatted_address`,
-                `postal_code`, `geodata`
-            )
-            VALUES
-            (
-                %s, %s, %s, %s, %s, %s, %s
-            )
-            """
+args = []
 
-stations.execute(sstation)
+s_stations.execute(
+    """
+    SELECT DISTINCT `from`, `from_id`
+    FROM train_trip
+    WHERE 1 = 1
+    AND type = 'NJ Transit'
+    UNION
+    SELECT DISTINCT `to`, `to_id`
+    FROM train_trip
+    WHERE 1 = 1
+    AND type = 'NJ Transit'
+    """
+)
 
-for station in stations:
+for station in s_stations:
 
     parms = dict()
     parms["address"] = station[0] + " train station"
@@ -60,17 +56,41 @@ for station in stations:
         if address_components['types'][0] == 'postal_code':
             postal_code = address_components['long_name']
 
-    args = (
-        station[0], station[1], lat, lng, formatted_address,
-        postal_code, data
+    args.append(
+        (
+            station[0], station[1], lat, lng, formatted_address,
+            postal_code, req.text
         )
-    insert.execute(istation, args)
+    )
 
-    print(station, formatted_address, postal_code)
+    print(station[0], station[1], 'RETRIEVED')
 
-    time.sleep(2)
+    time.sleep(1)
 
-db.commit()
-stations.close()
-insert.close()
+try:
+
+    i_stations.executemany(
+        """
+        INSERT INTO `station`
+        (
+            `from`, `from_id`, `lat`, `lng`, `formatted_address`,
+            `postal_code`, `response`
+        )
+        VALUES
+        (
+            %s, %s, %s, %s, %s, %s, %s
+        )
+        """,
+        args
+    )
+
+    db.commit()
+    print('station LOADED')
+
+except mysql.connector.Error as err:
+
+    print("station FAILED TO LOAD: {}".format(err))
+
+s_stations.close()
+i_stations.close()
 db.close()
