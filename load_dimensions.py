@@ -17,6 +17,8 @@ i_dimensions.execute("SET FOREIGN_KEY_CHECKS = 0")
 try:
     i_dimensions.execute("TRUNCATE TABLE d_weather")
 
+    i_dimensions.execute("INSERT INTO d_weather(id) VALUES (-1)")
+
     i_dimensions.execute(
         """
         INSERT INTO d_weather(`code`, `label`)
@@ -27,11 +29,15 @@ try:
     )
 
     print("d_weather LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_weather FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_station")
+
+    i_dimensions.execute("INSERT INTO d_station(id) VALUES (-1)")
 
     i_dimensions.execute(
         """
@@ -45,11 +51,15 @@ try:
     )
 
     print("d_station LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_station FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_line")
+
+    i_dimensions.execute("INSERT INTO d_line(id) VALUES (-1)")
 
     i_dimensions.execute(
         """
@@ -61,11 +71,15 @@ try:
     )
 
     print("d_line LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_line FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_status")
+
+    i_dimensions.execute("INSERT INTO d_status(id) VALUES (-1)")
 
     i_dimensions.execute(
         """
@@ -77,11 +91,15 @@ try:
     )
 
     print("d_status LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_status FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_train")
+
+    i_dimensions.execute("INSERT INTO d_train(id) VALUES (-1)")
 
     i_dimensions.execute(
         """
@@ -93,11 +111,17 @@ try:
     )
 
     print("d_train LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_train FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_event_venue")
+
+    i_dimensions.execute("""
+        INSERT INTO d_event_venue(id, station_id) VALUES (-1, -1)
+    """)
 
     i_dimensions.execute(
         """
@@ -112,11 +136,17 @@ try:
     )
 
     print("d_event_venue LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_event_venue FAILED TO LOAD: {}".format(err))
 
 try:
     i_dimensions.execute("TRUNCATE TABLE d_event")
+
+    i_dimensions.execute("""
+        INSERT INTO d_event(id, event_venue_id, station_id) VALUES (-1, -1, -1)
+    """)
 
     i_dimensions.execute(
         """
@@ -134,7 +164,9 @@ try:
     )
 
     print("d_event LOADED")
+
 except mysql.connector.Error as err:
+
     print("d_event FAILED TO LOAD: {}".format(err))
 
 i_dimensions.execute("SET FOREIGN_KEY_CHECKS = 1")
