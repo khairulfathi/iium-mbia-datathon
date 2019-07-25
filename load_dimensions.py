@@ -171,6 +171,13 @@ except mysql.connector.Error as err:
 
 i_dimensions.execute("SET FOREIGN_KEY_CHECKS = 1")
 
+# remove invalid or duplicate dimension values
+i_dimensions.execute(
+    """
+    DELETE FROM d_weather WHERE code = '113' AND label = 'Sunny'
+    """
+)
+
 db.commit()
 s_dimensions.close()
 i_dimensions.close()
