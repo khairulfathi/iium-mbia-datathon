@@ -45,6 +45,12 @@ start_date = date(2018, 1, 1)
 end_date = date(2020, 1, 1)
 args = []
 
+insert.execute("SET FOREIGN_KEY_CHECKS = 0")
+
+insert.execute("TRUNCATE TABLE d_date")
+
+insert.execute("INSERT INTO d_date(id) VALUES (-1)")
+
 for single_date in daterange(start_date, end_date):
 
     args.append((
@@ -66,25 +72,40 @@ print("d_date LOADED")
 i_time = """
             INSERT INTO `d_time`
             (
-                `label`, `hour`, `minute`
+                `label`, `hour`, `hour_12`, `minute`, `locale`, `hour_12_disp`,
+                `hour_24_disp`
             )
             VALUES
             (
-                %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s
             )
             """
 args = []
 
-for hour in range(0, 13):
+insert.execute("TRUNCATE TABLE d_time")
+
+insert.execute("INSERT INTO d_time(id) VALUES (-1)")
+
+for hour in range(0, 25):
 
     for minute in range(0, 60):
+
+        locale = 'pm' if hour > 11 else 'am'
+        hour_12 = hour - 12 if hour > 12 else hour
 
         args.append((
             str(hour).zfill(2) + ":" + str(minute).zfill(2),
             hour,
-            minute
+            hour_12,
+            minute,
+            locale,
+            str(hour_12).zfill(2) + ":" +
+            str(minute).zfill(2) + locale,
+            str(hour).zfill(2) + ":" + str(minute).zfill(2)
         ))
 
 insert.executemany(i_time, args)
 db.commit()
 print("d_time LOADED")
+
+insert.execute("SET FOREIGN_KEY_CHECKS = 1")
