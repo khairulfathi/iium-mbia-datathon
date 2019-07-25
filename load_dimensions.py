@@ -39,8 +39,8 @@ try:
         """
         INSERT INTO d_station(`label`, `code`, `postal_code`, `latitude`,
         `longitude`, `address`)
-        SELECT `from`, `from_id`, `postal_code`, `lat`, `lng`,
-        `formatted_address`
+        SELECT `from`, `from_id`, `postal_code`, CAST(`lat` AS DECIMAL(11, 8)),
+        CAST(`lng` AS DECIMAL(11, 8)), `formatted_address`
         FROM station
         ORDER BY `from_id`
         """
