@@ -12,6 +12,8 @@ s_dimensions = db.cursor(buffered=True)
 i_dimensions = db.cursor()
 args = []
 
+i_dimensions.execute("SET FOREIGN_KEY_CHECKS = 0")
+
 try:
     i_dimensions.execute("TRUNCATE TABLE d_weather")
 
@@ -29,11 +31,7 @@ except mysql.connector.Error as err:
     print("d_weather FAILED TO LOAD: {}".format(err))
 
 try:
-    i_dimensions.execute("TRUNCATE TABLE d_event")
-    i_dimensions.execute("DELETE FROM d_event_venue")
-    i_dimensions.execute("DELETE FROM d_station")
-    i_dimensions.execute("ALTER TABLE d_event_venue AUTO_INCREMENT = 1")
-    i_dimensions.execute("ALTER TABLE d_station AUTO_INCREMENT = 1")
+    i_dimensions.execute("TRUNCATE TABLE d_station")
 
     i_dimensions.execute(
         """
@@ -99,6 +97,8 @@ except mysql.connector.Error as err:
     print("d_train FAILED TO LOAD: {}".format(err))
 
 try:
+    i_dimensions.execute("TRUNCATE TABLE d_event_venue")
+
     i_dimensions.execute(
         """
         INSERT INTO d_event_venue(station_id, label, latitude, longitude)
@@ -116,6 +116,8 @@ except mysql.connector.Error as err:
     print("d_event_venue FAILED TO LOAD: {}".format(err))
 
 try:
+    i_dimensions.execute("TRUNCATE TABLE d_event")
+
     i_dimensions.execute(
         """
         INSERT INTO d_event (`event_venue_id`, `station_id`, `label`, `source`,
@@ -134,6 +136,8 @@ try:
     print("d_event LOADED")
 except mysql.connector.Error as err:
     print("d_event FAILED TO LOAD: {}".format(err))
+
+i_dimensions.execute("SET FOREIGN_KEY_CHECKS = 1")
 
 db.commit()
 s_dimensions.close()
